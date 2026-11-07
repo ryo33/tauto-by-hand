@@ -2,7 +2,7 @@
 
 私が Tauto 言語で遊ぶ用のリポジトリです。
 
-- [ドキュメントと色付きのコード](https://ryo33.github.io/tauto-by-hand/)
+- [ドキュメントとハイライト付きのコード](https://ryo33.github.io/tauto-by-hand/)
 
 ## 内容
 
