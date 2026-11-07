@@ -1,0 +1,103 @@
+import std::proof::Lang { proof }
+import std::proof::Forms { proof_we }
+import std::Text { Text }
+
+// MIU パズル（Hofstadter）の文字列の文法。
+// 文字列は M, I, U の並び。空白は読み飛ばされる。
+inductive_syntax!(miu, ```par
+%start Word
+%title "miu"
+%%
+Word: { Letter };
+Letter: M | I | U;
+M: 'M';
+I: 'I';
+U: 'U';
+```) =>
+  enum Letter, struct Word, fn parse, inductive Letter::I, inductive Word::I,
+  fn Letter::to_i, fn Word::to_i, fn Letter_list::to_i
+
+pub(open) inductive 記号: Type { M: 記号, I: 記号, U: 記号 }
+
+pub fn 連結(a: List(記号), b: List(記号)): List(記号) {
+  match a {
+    [] => b
+    [x, ..rest] => [x, ..連結(rest, b)]
+  }
+}
+
+pub(open) inductive 導出可能: List(記号) -> Prop {
+  公理: 導出可能([M, I])
+  規則1<x: List(記号)>(h: 導出可能(連結(x, [I]))): 導出可能(連結(x, [I, U]))
+  規則2<x: List(記号)>(h: 導出可能([M, ..x])): 導出可能([M, ..連結(x, x)])
+  規則3<x: List(記号), y: List(記号)>(h: 導出可能(連結(x, [I, I, I, ..y]))): 導出可能(連結(x, [U, ..y]))
+  規則4<x: List(記号), y: List(記号)>(h: 導出可能(連結(x, [U, U, ..y]))): 導出可能(連結(x, y))
+}
+
+theorem MIIIIUは作れる(): 導出可能([M, I, I, I, I, U]) {
+  let mii: 導出可能([M, I, I]) := 規則2(公理)
+  let miiii: 導出可能([M, I, I, I, I]) := 規則2(mii)
+  規則1(<x: [M, I, I, I]>, miiii)
+}
+
+pub(open) inductive Mod3: Type { R0: Mod3, R1: Mod3, R2: Mod3 }
+
+pub fn 次(r: Mod3): Mod3 {
+  match r { R0 => R1, R1 => R2, R2 => R0 }
+}
+
+pub fn 足す(a: Mod3, b: Mod3): Mod3 {
+  match a {
+    R0 => b
+    R1 => 次(b)
+    R2 => 次(次(b))
+  }
+}
+
+pub fn Iの数(s: List(記号)): Mod3 {
+  match s {
+    [] => R0
+    [c, ..rest] => match c {
+      M => Iの数(rest)
+      I => 次(Iの数(rest))
+      U => Iの数(rest)
+    }
+  }
+}
+
+theorem Iの数_連結(a: List(記号), b: List(記号)): Iの数(連結(a, b)) = 足す(Iの数(a), Iの数(b)) {
+  let 次_足す: ∀ p: Mod3, q: Mod3. 足す(次(p), q) = 次(足す(p, q)) := (p, q) => match p {
+    R0 => Refl
+    R1 => Refl
+    R2 => match q { R0 => Refl, R1 => Refl, R2 => Refl }
+  }
+  match a {
+    [] => Refl
+    [c, ..rest] => match c {
+      M => Iの数_連結(rest, b)
+      I => proof!(```
+        We have Iの数(連結($[I, ..rest], b))
+        = 次(Iの数(連結(rest, b)))
+        = 次(足す(Iの数(rest), Iの数(b))) by Iの数_連結(rest, b)
+        = 足す(次(Iの数(rest)), Iの数(b)) by 次_足す(Iの数(rest), Iの数(b)) = 足す(Iの数($[I, ..rest]), Iの数(b)).
+        ```)
+      U => Iの数_連結(rest, b)
+    }
+  }
+}
+
+theorem 不変<s: List(記号)>(d: 導出可能(s)): ¬(Iの数(s) = R0) {
+  let R0_倍: ∀ r: Mod3. (足す(r, r) = R0) -> r = R0 := (r: Mod3) => match r {
+    R0 => z => Refl
+    R1 => z => match z {}
+    R2 => z => match z {}
+  }
+  let 三つ進む: ∀ r: Mod3. 次(次(次(r))) = r := (r: Mod3) => match r { R0 => Refl, R1 => Refl, R2 => Refl }
+  match d {
+    公理 => ?公理
+    規則1(x, h) => ?規則1
+    規則2(x, h) => ?規則2
+    規則3(x, y, h) => ?規則3
+    規則4(x, y, h) => ?規則4
+  }
+}
