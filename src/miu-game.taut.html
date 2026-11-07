@@ -8,15 +8,15 @@
 <a class="ln" id="L5" href="#L5">5</a><span class="com">// MIU パズル（Hofstadter）の文字列の文法。</span>
 <a class="ln" id="L6" href="#L6">6</a><span class="com">// 文字列は M, I, U の並び。空白は読み飛ばされる。</span>
 <a class="ln" id="L7" href="#L7">7</a><span class="kw">inductive_syntax!</span>(miu, ```par
-<a class="ln" id="L8" href="#L8">8</a><span class="kw">%start</span><span class="str"> </span><span class="ty">Word</span><span class="str">
-<a class="ln" id="L9" href="#L9">9</a></span><span class="kw">%title</span><span class="str"> </span><span class="str">&quot;miu&quot;</span><span class="str">
-<a class="ln" id="L10" href="#L10">10</a></span><span class="kw">%%</span><span class="str">
-<a class="ln" id="L11" href="#L11">11</a></span><span class="ty">Word</span>:<span class="str"> </span>{<span class="str"> </span><span class="ty">Letter</span><span class="str"> </span>};<span class="str">
-<a class="ln" id="L12" href="#L12">12</a></span><span class="ty">Letter</span>:<span class="str"> </span><span class="ty">M</span><span class="str"> </span>|<span class="str"> </span><span class="ty">I</span><span class="str"> </span>|<span class="str"> </span><span class="ty">U</span>;<span class="str">
-<a class="ln" id="L13" href="#L13">13</a></span><span class="ty">M</span>:<span class="str"> </span><span class="str">'M'</span>;<span class="str">
-<a class="ln" id="L14" href="#L14">14</a></span><span class="ty">I</span>:<span class="str"> </span><span class="str">'I'</span>;<span class="str">
-<a class="ln" id="L15" href="#L15">15</a></span><span class="ty">U</span>:<span class="str"> </span><span class="str">'U'</span>;<span class="str">
-<a class="ln" id="L16" href="#L16">16</a></span>```) =&gt;
+<a class="ln" id="L8" href="#L8">8</a><span class="kw">%start</span> <span class="ty">Word</span>
+<a class="ln" id="L9" href="#L9">9</a><span class="kw">%title</span> <span class="str">&quot;miu&quot;</span>
+<a class="ln" id="L10" href="#L10">10</a><span class="kw">%%</span>
+<a class="ln" id="L11" href="#L11">11</a><span class="ty">Word</span>: { <span class="ty">Letter</span> };
+<a class="ln" id="L12" href="#L12">12</a><span class="ty">Letter</span>: <span class="ty">M</span> | <span class="ty">I</span> | <span class="ty">U</span>;
+<a class="ln" id="L13" href="#L13">13</a><span class="ty">M</span>: <span class="str">'M'</span>;
+<a class="ln" id="L14" href="#L14">14</a><span class="ty">I</span>: <span class="str">'I'</span>;
+<a class="ln" id="L15" href="#L15">15</a><span class="ty">U</span>: <span class="str">'U'</span>;
+<a class="ln" id="L16" href="#L16">16</a>```) =&gt;
 <a class="ln" id="L17" href="#L17">17</a>  <span class="kw">enum</span> Letter, <span class="kw">struct</span> Word, <span class="kw">fn</span> parse, <span class="kw">inductive</span> Letter::I, <span class="kw">inductive</span> Word::I,
 <a class="ln" id="L18" href="#L18">18</a>  <span class="kw">fn</span> Letter::to_i, <span class="kw">fn</span> Word::to_i, <span class="kw">fn</span> Letter_list::to_i
 <a class="ln" id="L19" href="#L19">19</a>
@@ -79,11 +79,11 @@
 <a class="ln" id="L76" href="#L76">76</a>    [c, ..rest] =&gt; <span class="kw">match</span> c {
 <a class="ln" id="L77" href="#L77">77</a>      M =&gt; <a href="#L68">Iの数_連結</a>(rest, b)
 <a class="ln" id="L78" href="#L78">78</a>      I =&gt; <span class="mac">proof!</span>(```
-<a class="ln" id="L79" href="#L79">79</a><span class="str">        </span><span class="kw">We</span><span class="str"> have Iの数</span>(<span class="str">連結</span>($[<span class="num">I</span>,<span class="str"> </span>..rest],<span class="str"> b</span>))<span class="str">
-<a class="ln" id="L80" href="#L80">80</a>        </span>=<span class="str"> 次</span>(<span class="str">Iの数</span>(<span class="str">連結</span>(<span class="str">rest</span>,<span class="str"> b</span>)))<span class="str">
-<a class="ln" id="L81" href="#L81">81</a>        </span>=<span class="str"> 次</span>(<span class="str">足す</span>(<span class="str">Iの数</span>(<span class="str">rest</span>),<span class="str"> Iの数</span>(<span class="str">b</span>)))<span class="str"> by Iの数_連結</span>(<span class="str">rest</span>,<span class="str"> b</span>)<span class="str">
-<a class="ln" id="L82" href="#L82">82</a>        </span>=<span class="str"> 足す</span>(<span class="str">次</span>(<span class="str">Iの数</span>(<span class="str">rest</span>)),<span class="str"> Iの数</span>(<span class="str">b</span>))<span class="str"> by 次_足す</span>(<span class="str">Iの数</span>(<span class="str">rest</span>),<span class="str"> Iの数</span>(<span class="str">b</span>))<span class="str"> </span>=<span class="str"> 足す</span>(<span class="str">Iの数</span>($[<span class="num">I</span>,<span class="str"> </span>..rest]),<span class="str"> Iの数</span>(<span class="str">b</span>)).<span class="str">
-<a class="ln" id="L83" href="#L83">83</a>        </span>```)
+<a class="ln" id="L79" href="#L79">79</a>        <span class="kw">We</span> have Iの数(連結($[<span class="num">I</span>, ..rest], b))
+<a class="ln" id="L80" href="#L80">80</a>        = 次(Iの数(連結(rest, b)))
+<a class="ln" id="L81" href="#L81">81</a>        = 次(足す(Iの数(rest), Iの数(b))) by Iの数_連結(rest, b)
+<a class="ln" id="L82" href="#L82">82</a>        = 足す(次(Iの数(rest)), Iの数(b)) by 次_足す(Iの数(rest), Iの数(b)) = 足す(Iの数($[<span class="num">I</span>, ..rest]), Iの数(b)).
+<a class="ln" id="L83" href="#L83">83</a>        ```)
 <a class="ln" id="L84" href="#L84">84</a>      U =&gt; <a href="#L68">Iの数_連結</a>(rest, b)
 <a class="ln" id="L85" href="#L85">85</a>    }
 <a class="ln" id="L86" href="#L86">86</a>  }
