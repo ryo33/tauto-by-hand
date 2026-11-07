@@ -1,6 +1,6 @@
 # tauto-by-hand
 
-Tauto で数学の証明を手で書いて学ぶリポジトリです。
+私が Tauto 言語で遊ぶ用のリポジトリです。
 
 - [docs and syntax highlighted codes](https://ryo33.github.io/tauto-by-hand/)
 
