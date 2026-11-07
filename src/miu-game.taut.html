@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>src/miu-game.taut</title><style>:root{color-scheme:light dark;--bg:#fff;--fg:#1f2328;--mut:#6e7781;--kw:#cf222e;--str:#0a3069;--num:#0550ae;--com:#6e7781;--mac:#8250df;--link:#0969da;--sel:#fff8c5}@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#7d8590;--kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--com:#8b949e;--mac:#d2a8ff;--link:#58a6ff;--sel:#3a3000}}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif}nav,main{padding:8px 16px}a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}pre{margin:0;padding:8px 0;font:13px/1.5 ui-monospace,monospace;overflow-x:auto}pre a{color:inherit}pre a[href^="#"],pre a[href*=".html"]{text-decoration:underline dotted}.ln{display:inline-block;width:5ch;margin-right:2ch;text-align:right;color:var(--mut);user-select:none;text-decoration:none!important}.ln:target{background:var(--sel)}.kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.com{color:var(--com)}.mac{color:var(--mac)}ul{list-style:none;padding-left:0}li li{padding-left:2ch}.kind{color:var(--mut)}</style>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>src/miu-game.taut</title><style>:root{color-scheme:light dark;--bg:#fff;--fg:#1f2328;--mut:#6e7781;--kw:#cf222e;--str:#0a3069;--num:#0550ae;--com:#6e7781;--mac:#8250df;--ty:#953800;--fn:#6639ba;--var:#116329;--link:#0969da;--sel:#fff8c5}@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#7d8590;--kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--com:#8b949e;--mac:#d2a8ff;--ty:#ffa657;--fn:#d2a8ff;--var:#7ee787;--link:#58a6ff;--sel:#3a3000}}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif}nav,main{padding:8px 16px}a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}pre{margin:0;padding:8px 0;font:13px/1.5 ui-monospace,monospace;overflow-x:auto}pre a{color:inherit}pre a[href^="#"],pre a[href*=".html"]{text-decoration:underline dotted}.ln{display:inline-block;width:5ch;margin-right:2ch;text-align:right;color:var(--mut);user-select:none;text-decoration:none!important}.ln:target{background:var(--sel)}.kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.com{color:var(--com)}.mac{color:var(--mac)}.ty{color:var(--ty)}.fn{color:var(--fn)}.var{color:var(--var)}ul{list-style:none;padding-left:0}li li{padding-left:2ch}.kind{color:var(--mut)}</style>
 <nav><a href="../index.html">index</a> / src/miu-game.taut</nav>
 <pre><code><a class="ln" id="L1" href="#L1">1</a><span class="kw">import</span> std::proof::Lang { proof }
 <a class="ln" id="L2" href="#L2">2</a><span class="kw">import</span> std::proof::Forms { proof_we }
@@ -8,14 +8,14 @@
 <a class="ln" id="L5" href="#L5">5</a><span class="com">// MIU パズル（Hofstadter）の文字列の文法。</span>
 <a class="ln" id="L6" href="#L6">6</a><span class="com">// 文字列は M, I, U の並び。空白は読み飛ばされる。</span>
 <a class="ln" id="L7" href="#L7">7</a><span class="kw">inductive_syntax!</span>(miu, ```par
-<a class="ln" id="L8" href="#L8">8</a><span class="str">%start Word
-<a class="ln" id="L9" href="#L9">9</a>%title &quot;miu&quot;
-<a class="ln" id="L10" href="#L10">10</a>%%
-<a class="ln" id="L11" href="#L11">11</a>Word: { Letter };
-<a class="ln" id="L12" href="#L12">12</a>Letter: M | I | U;
-<a class="ln" id="L13" href="#L13">13</a>M: 'M';
-<a class="ln" id="L14" href="#L14">14</a>I: 'I';
-<a class="ln" id="L15" href="#L15">15</a>U: 'U';
+<a class="ln" id="L8" href="#L8">8</a><span class="kw">%start</span><span class="str"> </span><span class="ty">Word</span><span class="str">
+<a class="ln" id="L9" href="#L9">9</a></span><span class="kw">%title</span><span class="str"> </span><span class="str">&quot;miu&quot;</span><span class="str">
+<a class="ln" id="L10" href="#L10">10</a></span><span class="kw">%%</span><span class="str">
+<a class="ln" id="L11" href="#L11">11</a></span><span class="ty">Word</span>:<span class="str"> </span>{<span class="str"> </span><span class="ty">Letter</span><span class="str"> </span>};<span class="str">
+<a class="ln" id="L12" href="#L12">12</a></span><span class="ty">Letter</span>:<span class="str"> </span><span class="ty">M</span><span class="str"> </span>|<span class="str"> </span><span class="ty">I</span><span class="str"> </span>|<span class="str"> </span><span class="ty">U</span>;<span class="str">
+<a class="ln" id="L13" href="#L13">13</a></span><span class="ty">M</span>:<span class="str"> </span><span class="str">'M'</span>;<span class="str">
+<a class="ln" id="L14" href="#L14">14</a></span><span class="ty">I</span>:<span class="str"> </span><span class="str">'I'</span>;<span class="str">
+<a class="ln" id="L15" href="#L15">15</a></span><span class="ty">U</span>:<span class="str"> </span><span class="str">'U'</span>;<span class="str">
 <a class="ln" id="L16" href="#L16">16</a></span>```) =&gt;
 <a class="ln" id="L17" href="#L17">17</a>  <span class="kw">enum</span> Letter, <span class="kw">struct</span> Word, <span class="kw">fn</span> parse, <span class="kw">inductive</span> Letter::I, <span class="kw">inductive</span> Word::I,
 <a class="ln" id="L18" href="#L18">18</a>  <span class="kw">fn</span> Letter::to_i, <span class="kw">fn</span> Word::to_i, <span class="kw">fn</span> Letter_list::to_i
@@ -79,10 +79,10 @@
 <a class="ln" id="L76" href="#L76">76</a>    [c, ..rest] =&gt; <span class="kw">match</span> c {
 <a class="ln" id="L77" href="#L77">77</a>      M =&gt; <a href="#L68">Iの数_連結</a>(rest, b)
 <a class="ln" id="L78" href="#L78">78</a>      I =&gt; <span class="mac">proof!</span>(```
-<a class="ln" id="L79" href="#L79">79</a><span class="str">        We have Iの数(連結($[I, ..rest], b))
-<a class="ln" id="L80" href="#L80">80</a>        = 次(Iの数(連結(rest, b)))
-<a class="ln" id="L81" href="#L81">81</a>        = 次(足す(Iの数(rest), Iの数(b))) by Iの数_連結(rest, b)
-<a class="ln" id="L82" href="#L82">82</a>        = 足す(次(Iの数(rest)), Iの数(b)) by 次_足す(Iの数(rest), Iの数(b)) = 足す(Iの数($[I, ..rest]), Iの数(b)).
+<a class="ln" id="L79" href="#L79">79</a><span class="str">        </span><span class="kw">We</span><span class="str"> have Iの数</span>(<span class="str">連結</span>($[<span class="num">I</span>,<span class="str"> </span>..rest],<span class="str"> b</span>))<span class="str">
+<a class="ln" id="L80" href="#L80">80</a>        </span>=<span class="str"> 次</span>(<span class="str">Iの数</span>(<span class="str">連結</span>(<span class="str">rest</span>,<span class="str"> b</span>)))<span class="str">
+<a class="ln" id="L81" href="#L81">81</a>        </span>=<span class="str"> 次</span>(<span class="str">足す</span>(<span class="str">Iの数</span>(<span class="str">rest</span>),<span class="str"> Iの数</span>(<span class="str">b</span>)))<span class="str"> by Iの数_連結</span>(<span class="str">rest</span>,<span class="str"> b</span>)<span class="str">
+<a class="ln" id="L82" href="#L82">82</a>        </span>=<span class="str"> 足す</span>(<span class="str">次</span>(<span class="str">Iの数</span>(<span class="str">rest</span>)),<span class="str"> Iの数</span>(<span class="str">b</span>))<span class="str"> by 次_足す</span>(<span class="str">Iの数</span>(<span class="str">rest</span>),<span class="str"> Iの数</span>(<span class="str">b</span>))<span class="str"> </span>=<span class="str"> 足す</span>(<span class="str">Iの数</span>($[<span class="num">I</span>,<span class="str"> </span>..rest]),<span class="str"> Iの数</span>(<span class="str">b</span>)).<span class="str">
 <a class="ln" id="L83" href="#L83">83</a>        </span>```)
 <a class="ln" id="L84" href="#L84">84</a>      U =&gt; <a href="#L68">Iの数_連結</a>(rest, b)
 <a class="ln" id="L85" href="#L85">85</a>    }
