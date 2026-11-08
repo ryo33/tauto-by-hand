@@ -4,105 +4,82 @@
 <pre><code><a class="ln" id="L1" href="#L1">1</a><span class="kw">import</span> std::proof::Lang { proof }
 <a class="ln" id="L2" href="#L2">2</a><span class="kw">import</span> std::proof::Forms { proof_we }
 <a class="ln" id="L3" href="#L3">3</a><span class="kw">import</span> std::Text { Text }
-<a class="ln" id="L4" href="#L4">4</a>
-<a class="ln" id="L5" href="#L5">5</a><span class="com">// MIU パズル（Hofstadter）の文字列の文法。</span>
-<a class="ln" id="L6" href="#L6">6</a><span class="com">// 文字列は M, I, U の並び。空白は読み飛ばされる。</span>
-<a class="ln" id="L7" href="#L7">7</a><span class="kw">inductive_syntax!</span>(miu, ```par
-<a class="ln" id="L8" href="#L8">8</a><span class="kw">%start</span> <span class="ty">Word</span>
-<a class="ln" id="L9" href="#L9">9</a><span class="kw">%title</span> <span class="str">&quot;miu&quot;</span>
-<a class="ln" id="L10" href="#L10">10</a><span class="kw">%%</span>
-<a class="ln" id="L11" href="#L11">11</a><span class="ty">Word</span>: { <span class="ty">Letter</span> };
-<a class="ln" id="L12" href="#L12">12</a><span class="ty">Letter</span>: <span class="ty">M</span> | <span class="ty">I</span> | <span class="ty">U</span>;
-<a class="ln" id="L13" href="#L13">13</a><span class="ty">M</span>: <span class="str">'M'</span>;
-<a class="ln" id="L14" href="#L14">14</a><span class="ty">I</span>: <span class="str">'I'</span>;
-<a class="ln" id="L15" href="#L15">15</a><span class="ty">U</span>: <span class="str">'U'</span>;
-<a class="ln" id="L16" href="#L16">16</a>```) =&gt;
-<a class="ln" id="L17" href="#L17">17</a>  <span class="kw">enum</span> Letter, <span class="kw">struct</span> Word, <span class="kw">fn</span> parse, <span class="kw">inductive</span> Letter::I, <span class="kw">inductive</span> Word::I,
-<a class="ln" id="L18" href="#L18">18</a>  <span class="kw">fn</span> Letter::to_i, <span class="kw">fn</span> Word::to_i, <span class="kw">fn</span> Letter_list::to_i
+<a class="ln" id="L4" href="#L4">4</a><span class="kw">import</span> self::syntax { 連結, 記号, m }
+<a class="ln" id="L5" href="#L5">5</a>
+<a class="ln" id="L6" href="#L6">6</a><span class="kw">pub(open)</span> <span class="kw">inductive</span> 導出可能: List(記号) -&gt; Prop {
+<a class="ln" id="L7" href="#L7">7</a>  公理: <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`MI`))
+<a class="ln" id="L8" href="#L8">8</a>  規則1&lt;x: List(記号)&gt;(h: <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`xI`))): <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`xIU`))
+<a class="ln" id="L9" href="#L9">9</a>  規則2&lt;x: List(記号)&gt;(h: <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`Mx`))): <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`Mxx`))
+<a class="ln" id="L10" href="#L10">10</a>  規則3&lt;x: List(記号), y: List(記号)&gt;(h: <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`xIIIy`))): <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`xUy`))
+<a class="ln" id="L11" href="#L11">11</a>  規則4&lt;x: List(記号), y: List(記号)&gt;(h: <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`xUUy`))): <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`xy`))
+<a class="ln" id="L12" href="#L12">12</a>}
+<a class="ln" id="L13" href="#L13">13</a>
+<a class="ln" id="L14" href="#L14">14</a><span class="kw">theorem</span> MIIIIUは作れる(): <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`MIIIIU`)) {
+<a class="ln" id="L15" href="#L15">15</a>  <span class="kw">let</span> mii: <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`MII`)) := <a href="#L9">規則2</a>(<a href="#L7">公理</a>)
+<a class="ln" id="L16" href="#L16">16</a>  <span class="kw">let</span> miiii: <a href="#L6">導出可能</a>(<span class="mac">m!</span>(`MIIII`)) := <a href="#L9">規則2</a>(mii)
+<a class="ln" id="L17" href="#L17">17</a>  <a href="#L8">規則1</a>(&lt;x: <span class="mac">m!</span>(`MIII`)&gt;, miiii)
+<a class="ln" id="L18" href="#L18">18</a>}
 <a class="ln" id="L19" href="#L19">19</a>
-<a class="ln" id="L20" href="#L20">20</a><span class="kw">pub(open)</span> <span class="kw">inductive</span> 記号: Type { M: <a href="#L20">記号</a>, I: <a href="#L20">記号</a>, U: <a href="#L20">記号</a> }
+<a class="ln" id="L20" href="#L20">20</a><span class="kw">pub(open)</span> <span class="kw">inductive</span> Mod3: Type { R0: <a href="#L20">Mod3</a>, R1: <a href="#L20">Mod3</a>, R2: <a href="#L20">Mod3</a> }
 <a class="ln" id="L21" href="#L21">21</a>
-<a class="ln" id="L22" href="#L22">22</a><span class="kw">pub</span> <span class="kw">fn</span> 連結(a: List(<a href="#L20">記号</a>), b: List(<a href="#L20">記号</a>)): List(<a href="#L20">記号</a>) {
-<a class="ln" id="L23" href="#L23">23</a>  <span class="kw">match</span> a {
-<a class="ln" id="L24" href="#L24">24</a>    [] =&gt; b
-<a class="ln" id="L25" href="#L25">25</a>    [x, ..rest] =&gt; [x, ..<a href="#L22">連結</a>(rest, b)]
-<a class="ln" id="L26" href="#L26">26</a>  }
-<a class="ln" id="L27" href="#L27">27</a>}
-<a class="ln" id="L28" href="#L28">28</a>
-<a class="ln" id="L29" href="#L29">29</a><span class="kw">pub(open)</span> <span class="kw">inductive</span> 導出可能: List(<a href="#L20">記号</a>) -&gt; Prop {
-<a class="ln" id="L30" href="#L30">30</a>  公理: <a href="#L29">導出可能</a>([<a href="#L20">M</a>, <a href="#L20">I</a>])
-<a class="ln" id="L31" href="#L31">31</a>  規則1&lt;x: List(<a href="#L20">記号</a>)&gt;(h: <a href="#L29">導出可能</a>(<a href="#L22">連結</a>(x, [<a href="#L20">I</a>]))): <a href="#L29">導出可能</a>(<a href="#L22">連結</a>(x, [<a href="#L20">I</a>, <a href="#L20">U</a>]))
-<a class="ln" id="L32" href="#L32">32</a>  規則2&lt;x: List(<a href="#L20">記号</a>)&gt;(h: <a href="#L29">導出可能</a>([<a href="#L20">M</a>, ..x])): <a href="#L29">導出可能</a>([<a href="#L20">M</a>, ..<a href="#L22">連結</a>(x, x)])
-<a class="ln" id="L33" href="#L33">33</a>  規則3&lt;x: List(<a href="#L20">記号</a>), y: List(<a href="#L20">記号</a>)&gt;(h: <a href="#L29">導出可能</a>(<a href="#L22">連結</a>(x, [<a href="#L20">I</a>, <a href="#L20">I</a>, <a href="#L20">I</a>, ..y]))): <a href="#L29">導出可能</a>(<a href="#L22">連結</a>(x, [<a href="#L20">U</a>, ..y]))
-<a class="ln" id="L34" href="#L34">34</a>  規則4&lt;x: List(<a href="#L20">記号</a>), y: List(<a href="#L20">記号</a>)&gt;(h: <a href="#L29">導出可能</a>(<a href="#L22">連結</a>(x, [<a href="#L20">U</a>, <a href="#L20">U</a>, ..y]))): <a href="#L29">導出可能</a>(<a href="#L22">連結</a>(x, y))
-<a class="ln" id="L35" href="#L35">35</a>}
-<a class="ln" id="L36" href="#L36">36</a>
-<a class="ln" id="L37" href="#L37">37</a><span class="kw">theorem</span> MIIIIUは作れる(): <a href="#L29">導出可能</a>([<a href="#L20">M</a>, <a href="#L20">I</a>, <a href="#L20">I</a>, <a href="#L20">I</a>, <a href="#L20">I</a>, <a href="#L20">U</a>]) {
-<a class="ln" id="L38" href="#L38">38</a>  <span class="kw">let</span> mii: <a href="#L29">導出可能</a>([<a href="#L20">M</a>, <a href="#L20">I</a>, <a href="#L20">I</a>]) := <a href="#L32">規則2</a>(<a href="#L30">公理</a>)
-<a class="ln" id="L39" href="#L39">39</a>  <span class="kw">let</span> miiii: <a href="#L29">導出可能</a>([<a href="#L20">M</a>, <a href="#L20">I</a>, <a href="#L20">I</a>, <a href="#L20">I</a>, <a href="#L20">I</a>]) := <a href="#L32">規則2</a>(mii)
-<a class="ln" id="L40" href="#L40">40</a>  <a href="#L31">規則1</a>(&lt;x: [<a href="#L20">M</a>, <a href="#L20">I</a>, <a href="#L20">I</a>, <a href="#L20">I</a>]&gt;, miiii)
-<a class="ln" id="L41" href="#L41">41</a>}
-<a class="ln" id="L42" href="#L42">42</a>
-<a class="ln" id="L43" href="#L43">43</a><span class="kw">pub(open)</span> <span class="kw">inductive</span> Mod3: Type { R0: <a href="#L43">Mod3</a>, R1: <a href="#L43">Mod3</a>, R2: <a href="#L43">Mod3</a> }
+<a class="ln" id="L22" href="#L22">22</a><span class="kw">pub</span> <span class="kw">fn</span> 次(r: <a href="#L20">Mod3</a>): <a href="#L20">Mod3</a> {
+<a class="ln" id="L23" href="#L23">23</a>  <span class="kw">match</span> r { R0 =&gt; R1, R1 =&gt; R2, R2 =&gt; R0 }
+<a class="ln" id="L24" href="#L24">24</a>}
+<a class="ln" id="L25" href="#L25">25</a>
+<a class="ln" id="L26" href="#L26">26</a><span class="kw">pub</span> <span class="kw">fn</span> 足す(a: <a href="#L20">Mod3</a>, b: <a href="#L20">Mod3</a>): <a href="#L20">Mod3</a> {
+<a class="ln" id="L27" href="#L27">27</a>  <span class="kw">match</span> a {
+<a class="ln" id="L28" href="#L28">28</a>    R0 =&gt; b
+<a class="ln" id="L29" href="#L29">29</a>    R1 =&gt; <a href="#L22">次</a>(b)
+<a class="ln" id="L30" href="#L30">30</a>    R2 =&gt; <a href="#L22">次</a>(<a href="#L22">次</a>(b))
+<a class="ln" id="L31" href="#L31">31</a>  }
+<a class="ln" id="L32" href="#L32">32</a>}
+<a class="ln" id="L33" href="#L33">33</a>
+<a class="ln" id="L34" href="#L34">34</a><span class="kw">pub</span> <span class="kw">fn</span> Iの数(s: List(記号)): <a href="#L20">Mod3</a> {
+<a class="ln" id="L35" href="#L35">35</a>  <span class="kw">match</span> s {
+<a class="ln" id="L36" href="#L36">36</a>    [] =&gt; <a href="#L20">R0</a>
+<a class="ln" id="L37" href="#L37">37</a>    [c, ..rest] =&gt; <span class="kw">match</span> c {
+<a class="ln" id="L38" href="#L38">38</a>      M =&gt; <a href="#L34">Iの数</a>(rest)
+<a class="ln" id="L39" href="#L39">39</a>      I =&gt; <a href="#L22">次</a>(<a href="#L34">Iの数</a>(rest))
+<a class="ln" id="L40" href="#L40">40</a>      U =&gt; <a href="#L34">Iの数</a>(rest)
+<a class="ln" id="L41" href="#L41">41</a>    }
+<a class="ln" id="L42" href="#L42">42</a>  }
+<a class="ln" id="L43" href="#L43">43</a>}
 <a class="ln" id="L44" href="#L44">44</a>
-<a class="ln" id="L45" href="#L45">45</a><span class="kw">pub</span> <span class="kw">fn</span> 次(r: <a href="#L43">Mod3</a>): <a href="#L43">Mod3</a> {
-<a class="ln" id="L46" href="#L46">46</a>  <span class="kw">match</span> r { R0 =&gt; R1, R1 =&gt; R2, R2 =&gt; R0 }
-<a class="ln" id="L47" href="#L47">47</a>}
-<a class="ln" id="L48" href="#L48">48</a>
-<a class="ln" id="L49" href="#L49">49</a><span class="kw">pub</span> <span class="kw">fn</span> 足す(a: <a href="#L43">Mod3</a>, b: <a href="#L43">Mod3</a>): <a href="#L43">Mod3</a> {
-<a class="ln" id="L50" href="#L50">50</a>  <span class="kw">match</span> a {
-<a class="ln" id="L51" href="#L51">51</a>    R0 =&gt; b
-<a class="ln" id="L52" href="#L52">52</a>    R1 =&gt; <a href="#L45">次</a>(b)
-<a class="ln" id="L53" href="#L53">53</a>    R2 =&gt; <a href="#L45">次</a>(<a href="#L45">次</a>(b))
-<a class="ln" id="L54" href="#L54">54</a>  }
-<a class="ln" id="L55" href="#L55">55</a>}
-<a class="ln" id="L56" href="#L56">56</a>
-<a class="ln" id="L57" href="#L57">57</a><span class="kw">pub</span> <span class="kw">fn</span> Iの数(s: List(<a href="#L20">記号</a>)): <a href="#L43">Mod3</a> {
-<a class="ln" id="L58" href="#L58">58</a>  <span class="kw">match</span> s {
-<a class="ln" id="L59" href="#L59">59</a>    [] =&gt; <a href="#L43">R0</a>
-<a class="ln" id="L60" href="#L60">60</a>    [c, ..rest] =&gt; <span class="kw">match</span> c {
-<a class="ln" id="L61" href="#L61">61</a>      M =&gt; <a href="#L57">Iの数</a>(rest)
-<a class="ln" id="L62" href="#L62">62</a>      I =&gt; <a href="#L45">次</a>(<a href="#L57">Iの数</a>(rest))
-<a class="ln" id="L63" href="#L63">63</a>      U =&gt; <a href="#L57">Iの数</a>(rest)
-<a class="ln" id="L64" href="#L64">64</a>    }
-<a class="ln" id="L65" href="#L65">65</a>  }
-<a class="ln" id="L66" href="#L66">66</a>}
-<a class="ln" id="L67" href="#L67">67</a>
-<a class="ln" id="L68" href="#L68">68</a><span class="kw">theorem</span> Iの数_連結(a: List(<a href="#L20">記号</a>), b: List(<a href="#L20">記号</a>)): <a href="#L57">Iの数</a>(<a href="#L22">連結</a>(a, b)) = <a href="#L49">足す</a>(<a href="#L57">Iの数</a>(a), <a href="#L57">Iの数</a>(b)) {
-<a class="ln" id="L69" href="#L69">69</a>  <span class="kw">let</span> 次_足す: <span class="kw">∀</span> p: <a href="#L43">Mod3</a>, q: Mod3. <a href="#L49">足す</a>(<a href="#L45">次</a>(p), q) = <a href="#L45">次</a>(<a href="#L49">足す</a>(p, q)) := (p, q) =&gt; <span class="kw">match</span> p {
-<a class="ln" id="L70" href="#L70">70</a>    R0 =&gt; Refl
-<a class="ln" id="L71" href="#L71">71</a>    R1 =&gt; Refl
-<a class="ln" id="L72" href="#L72">72</a>    R2 =&gt; <span class="kw">match</span> q { R0 =&gt; Refl, R1 =&gt; Refl, R2 =&gt; Refl }
-<a class="ln" id="L73" href="#L73">73</a>  }
-<a class="ln" id="L74" href="#L74">74</a>  <span class="kw">match</span> a {
-<a class="ln" id="L75" href="#L75">75</a>    [] =&gt; Refl
-<a class="ln" id="L76" href="#L76">76</a>    [c, ..rest] =&gt; <span class="kw">match</span> c {
-<a class="ln" id="L77" href="#L77">77</a>      M =&gt; <a href="#L68">Iの数_連結</a>(rest, b)
-<a class="ln" id="L78" href="#L78">78</a>      I =&gt; <span class="mac">proof!</span>(```
-<a class="ln" id="L79" href="#L79">79</a>        <span class="kw">We</span> have Iの数(連結($[<span class="num">I</span>, ..rest], b))
-<a class="ln" id="L80" href="#L80">80</a>        = 次(Iの数(連結(rest, b)))
-<a class="ln" id="L81" href="#L81">81</a>        = 次(足す(Iの数(rest), Iの数(b))) by Iの数_連結(rest, b)
-<a class="ln" id="L82" href="#L82">82</a>        = 足す(次(Iの数(rest)), Iの数(b)) by 次_足す(Iの数(rest), Iの数(b)) = 足す(Iの数($[<span class="num">I</span>, ..rest]), Iの数(b)).
-<a class="ln" id="L83" href="#L83">83</a>        ```)
-<a class="ln" id="L84" href="#L84">84</a>      U =&gt; <a href="#L68">Iの数_連結</a>(rest, b)
-<a class="ln" id="L85" href="#L85">85</a>    }
-<a class="ln" id="L86" href="#L86">86</a>  }
-<a class="ln" id="L87" href="#L87">87</a>}
-<a class="ln" id="L88" href="#L88">88</a>
-<a class="ln" id="L89" href="#L89">89</a><span class="kw">theorem</span> 不変&lt;s: List(<a href="#L20">記号</a>)&gt;(d: <a href="#L29">導出可能</a>(s)): ¬(<a href="#L57">Iの数</a>(s) = R0) {
-<a class="ln" id="L90" href="#L90">90</a>  <span class="kw">let</span> R0_倍: <span class="kw">∀</span> r: <a href="#L43">Mod3</a>. (<a href="#L49">足す</a>(r, r) = R0) -&gt; r = R0 := (r: Mod3) =&gt; <span class="kw">match</span> r {
-<a class="ln" id="L91" href="#L91">91</a>    R0 =&gt; z =&gt; Refl
-<a class="ln" id="L92" href="#L92">92</a>    R1 =&gt; z =&gt; <span class="kw">match</span> z {}
-<a class="ln" id="L93" href="#L93">93</a>    R2 =&gt; z =&gt; <span class="kw">match</span> z {}
-<a class="ln" id="L94" href="#L94">94</a>  }
-<a class="ln" id="L95" href="#L95">95</a>  <span class="kw">let</span> 三つ進む: <span class="kw">∀</span> r: <a href="#L43">Mod3</a>. <a href="#L45">次</a>(<a href="#L45">次</a>(<a href="#L45">次</a>(r))) = r := (r: Mod3) =&gt; <span class="kw">match</span> r { R0 =&gt; Refl, R1 =&gt; Refl, R2 =&gt; Refl }
-<a class="ln" id="L96" href="#L96">96</a>  <span class="kw">match</span> d {
-<a class="ln" id="L97" href="#L97">97</a>    公理 =&gt; ?公理
-<a class="ln" id="L98" href="#L98">98</a>    規則1(x, h) =&gt; ?規則1
-<a class="ln" id="L99" href="#L99">99</a>    規則2(x, h) =&gt; ?規則2
-<a class="ln" id="L100" href="#L100">100</a>    規則3(x, y, h) =&gt; ?規則3
-<a class="ln" id="L101" href="#L101">101</a>    規則4(x, y, h) =&gt; ?規則4
-<a class="ln" id="L102" href="#L102">102</a>  }
-<a class="ln" id="L103" href="#L103">103</a>}
+<a class="ln" id="L45" href="#L45">45</a><span class="kw">theorem</span> Iの数_連結(a: List(記号), b: List(記号)): <a href="#L34">Iの数</a>(連結(a, b)) = <a href="#L26">足す</a>(<a href="#L34">Iの数</a>(a), <a href="#L34">Iの数</a>(b)) {
+<a class="ln" id="L46" href="#L46">46</a>  <span class="kw">let</span> 次_足す: <span class="kw">∀</span> p: <a href="#L20">Mod3</a>, q: Mod3. <a href="#L26">足す</a>(<a href="#L22">次</a>(p), q) = <a href="#L22">次</a>(<a href="#L26">足す</a>(p, q)) := (p, q) =&gt; <span class="kw">match</span> p {
+<a class="ln" id="L47" href="#L47">47</a>    R0 =&gt; Refl
+<a class="ln" id="L48" href="#L48">48</a>    R1 =&gt; Refl
+<a class="ln" id="L49" href="#L49">49</a>    R2 =&gt; <span class="kw">match</span> q { R0 =&gt; Refl, R1 =&gt; Refl, R2 =&gt; Refl }
+<a class="ln" id="L50" href="#L50">50</a>  }
+<a class="ln" id="L51" href="#L51">51</a>  <span class="kw">match</span> a {
+<a class="ln" id="L52" href="#L52">52</a>    [] =&gt; Refl
+<a class="ln" id="L53" href="#L53">53</a>    [c, ..rest] =&gt; <span class="kw">match</span> c {
+<a class="ln" id="L54" href="#L54">54</a>      M =&gt; <a href="#L45">Iの数_連結</a>(rest, b)
+<a class="ln" id="L55" href="#L55">55</a>      I =&gt; <span class="mac">proof!</span>(```
+<a class="ln" id="L56" href="#L56">56</a>        <span class="kw">We</span> have Iの数(連結($[<span class="num">I</span>, ..rest], b))
+<a class="ln" id="L57" href="#L57">57</a>        = 次(Iの数(連結(rest, b)))
+<a class="ln" id="L58" href="#L58">58</a>        = 次(足す(Iの数(rest), Iの数(b))) by Iの数_連結(rest, b)
+<a class="ln" id="L59" href="#L59">59</a>        = 足す(次(Iの数(rest)), Iの数(b)) by 次_足す(Iの数(rest), Iの数(b)) = 足す(Iの数($[<span class="num">I</span>, ..rest]), Iの数(b)).
+<a class="ln" id="L60" href="#L60">60</a>        ```)
+<a class="ln" id="L61" href="#L61">61</a>      U =&gt; <a href="#L45">Iの数_連結</a>(rest, b)
+<a class="ln" id="L62" href="#L62">62</a>    }
+<a class="ln" id="L63" href="#L63">63</a>  }
+<a class="ln" id="L64" href="#L64">64</a>}
+<a class="ln" id="L65" href="#L65">65</a>
+<a class="ln" id="L66" href="#L66">66</a><span class="kw">theorem</span> 不変&lt;s: List(記号)&gt;(d: <a href="#L6">導出可能</a>(s)): ¬(<a href="#L34">Iの数</a>(s) = R0) {
+<a class="ln" id="L67" href="#L67">67</a>  <span class="kw">let</span> R0_倍: <span class="kw">∀</span> r: <a href="#L20">Mod3</a>. (<a href="#L26">足す</a>(r, r) = R0) -&gt; r = R0 := (r: Mod3) =&gt; <span class="kw">match</span> r {
+<a class="ln" id="L68" href="#L68">68</a>    R0 =&gt; z =&gt; Refl
+<a class="ln" id="L69" href="#L69">69</a>    R1 =&gt; z =&gt; <span class="kw">match</span> z {}
+<a class="ln" id="L70" href="#L70">70</a>    R2 =&gt; z =&gt; <span class="kw">match</span> z {}
+<a class="ln" id="L71" href="#L71">71</a>  }
+<a class="ln" id="L72" href="#L72">72</a>  <span class="kw">let</span> 三つ進む: <span class="kw">∀</span> r: <a href="#L20">Mod3</a>. <a href="#L22">次</a>(<a href="#L22">次</a>(<a href="#L22">次</a>(r))) = r := (r: Mod3) =&gt; <span class="kw">match</span> r { R0 =&gt; Refl, R1 =&gt; Refl, R2 =&gt; Refl }
+<a class="ln" id="L73" href="#L73">73</a>  <span class="kw">match</span> d {
+<a class="ln" id="L74" href="#L74">74</a>    公理 =&gt; ?公理
+<a class="ln" id="L75" href="#L75">75</a>    規則1(x, h) =&gt; ?規則1
+<a class="ln" id="L76" href="#L76">76</a>    規則2(x, h) =&gt; ?規則2
+<a class="ln" id="L77" href="#L77">77</a>    規則3(x, y, h) =&gt; ?規則3
+<a class="ln" id="L78" href="#L78">78</a>    規則4(x, y, h) =&gt; ?規則4
+<a class="ln" id="L79" href="#L79">79</a>  }
+<a class="ln" id="L80" href="#L80">80</a>}
 </code></pre>
 </html>
