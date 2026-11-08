@@ -1,43 +1,20 @@
 import std::proof::Lang { proof }
 import std::proof::Forms { proof_we }
 import std::Text { Text }
-
-// MIU パズル（Hofstadter）の文字列の文法。
-// 文字列は M, I, U の並び。空白は読み飛ばされる。
-inductive_syntax!(miu, ```par
-%start Word
-%title "miu"
-%%
-Word: { Letter };
-Letter: M | I | U;
-M: 'M';
-I: 'I';
-U: 'U';
-```) =>
-  enum Letter, struct Word, fn parse, inductive Letter::I, inductive Word::I,
-  fn Letter::to_i, fn Word::to_i, fn Letter_list::to_i
-
-pub(open) inductive 記号: Type { M: 記号, I: 記号, U: 記号 }
-
-pub fn 連結(a: List(記号), b: List(記号)): List(記号) {
-  match a {
-    [] => b
-    [x, ..rest] => [x, ..連結(rest, b)]
-  }
-}
+import self::syntax { 連結, 記号, m }
 
 pub(open) inductive 導出可能: List(記号) -> Prop {
-  公理: 導出可能([M, I])
-  規則1<x: List(記号)>(h: 導出可能(連結(x, [I]))): 導出可能(連結(x, [I, U]))
-  規則2<x: List(記号)>(h: 導出可能([M, ..x])): 導出可能([M, ..連結(x, x)])
-  規則3<x: List(記号), y: List(記号)>(h: 導出可能(連結(x, [I, I, I, ..y]))): 導出可能(連結(x, [U, ..y]))
-  規則4<x: List(記号), y: List(記号)>(h: 導出可能(連結(x, [U, U, ..y]))): 導出可能(連結(x, y))
+  公理: 導出可能(m!(`MI`))
+  規則1<x: List(記号)>(h: 導出可能(m!(`xI`))): 導出可能(m!(`xIU`))
+  規則2<x: List(記号)>(h: 導出可能(m!(`Mx`))): 導出可能(m!(`Mxx`))
+  規則3<x: List(記号), y: List(記号)>(h: 導出可能(m!(`xIIIy`))): 導出可能(m!(`xUy`))
+  規則4<x: List(記号), y: List(記号)>(h: 導出可能(m!(`xUUy`))): 導出可能(m!(`xy`))
 }
 
-theorem MIIIIUは作れる(): 導出可能([M, I, I, I, I, U]) {
-  let mii: 導出可能([M, I, I]) := 規則2(公理)
-  let miiii: 導出可能([M, I, I, I, I]) := 規則2(mii)
-  規則1(<x: [M, I, I, I]>, miiii)
+theorem MIIIIUは作れる(): 導出可能(m!(`MIIIIU`)) {
+  let mii: 導出可能(m!(`MII`)) := 規則2(公理)
+  let miiii: 導出可能(m!(`MIIII`)) := 規則2(mii)
+  規則1(<x: m!(`MIII`)>, miiii)
 }
 
 pub(open) inductive Mod3: Type { R0: Mod3, R1: Mod3, R2: Mod3 }

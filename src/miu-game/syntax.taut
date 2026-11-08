@@ -1,0 +1,55 @@
+import std::prelude::Macro { Syn, SynExpr }
+import std::Text { Text }
+
+// MIU パズル（Hofstadter）の文字列の文法。
+// 文字列は M, I, U と、小文字一文字の変数（文字列）の並び。空白は読み飛ばされる。
+inductive_syntax!(miu, ```par
+%start Word
+%title "miu"
+%%
+Word: { Piece };
+Piece: Letter | Var;
+Letter: MLetter | ILetter | ULetter;
+MLetter: 'M';
+ILetter: 'I';
+ULetter: 'U';
+Var: /[a-z]/;
+```) =>
+  enum Letter, enum Piece, struct Word, fn parse, inductive Letter::I, inductive Piece::I, inductive Word::I,
+  fn Letter::to_i, fn Piece::to_i, fn Word::to_i, fn Piece_list::to_i
+
+pub(open) inductive 記号: Type { M: 記号, I: 記号, U: 記号 }
+
+pub fn 連結(a: List(記号), b: List(記号)): List(記号) {
+  match a {
+    [] => b
+    [x, ..rest] => [x, ..連結(rest, b)]
+  }
+}
+
+fn 列(ps: List(miu::Piece)): SynExpr {
+  match ps {
+    [] => quote { [] }
+    [p, ..rest] => {
+      let r := 列(rest)
+      match p {
+        Letter(l) => match l {
+          MLetter(_) => quote { [M, ..$r] }
+          ILetter(_) => quote { [I, ..$r] }
+          ULetter(_) => quote { [U, ..$r] }
+        }
+        Var(t) => {
+          let x := ExVar(Syn::ident(t))
+          match rest {
+            [] => x
+            _ => quote { 連結($x, $r) }
+          }
+        }
+      }
+    }
+  }
+}
+
+pub macro fn m(w: miu::Word): SynExpr {
+  列(w.piece)
+}
