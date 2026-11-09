@@ -1,0 +1,58 @@
+import self::syntax
+
+pub(open) inductive Mem: (Fm, Ctx()) -> Prop {
+  here<a: Fm, Γ: Ctx()>: Mem(a, [a, ..Γ])
+  there<a: Fm, b: Fm, Γ: Ctx()>(h: Mem(a, Γ)): Mem(a, [b, ..Γ])
+}
+
+pub(open) inductive Derivable: (Ctx(), Fm) -> Prop {
+  ax<Γ: Ctx(), a: Fm>(h: Mem(a, Γ)): f!`Γ ⊢ a`
+  and_intro<Γ: Ctx(), a: Fm, b: Fm>(ha: f!`Γ ⊢ a`, hb: f!`Γ ⊢ b`): f!`Γ ⊢ a ∧ b`
+  and_elim_left<Γ: Ctx(), a: Fm, b: Fm>(h: f!`Γ ⊢ a ∧ b`): f!`Γ ⊢ a`
+  and_elim_right<Γ: Ctx(), a: Fm, b: Fm>(h: f!`Γ ⊢ a ∧ b`): f!`Γ ⊢ b`
+  imp_intro<Γ: Ctx(), a: Fm, b: Fm>(h: f!`a, Γ ⊢ b`): f!`Γ ⊢ a → b`
+  imp_elim<Γ: Ctx(), a: Fm, b: Fm>(hf: f!`Γ ⊢ a → b`, ha: f!`Γ ⊢ a`): f!`Γ ⊢ b`
+  or_intro_left<Γ: Ctx(), a: Fm, b: Fm>(h: f!`Γ ⊢ a`): f!`Γ ⊢ a ∨ b`
+  or_intro_right<Γ: Ctx(), a: Fm, b: Fm>(h: f!`Γ ⊢ b`): f!`Γ ⊢ a ∨ b`
+  or_elim<Γ: Ctx(), a: Fm, b: Fm, c: Fm>(
+    h: f!`Γ ⊢ a ∨ b`,
+    ha: f!`a, Γ ⊢ c`,
+    hb: f!`b, Γ ⊢ c`
+  ): f!`Γ ⊢ c`
+  not_intro<Γ: Ctx(), a: Fm>(h: f!`a, Γ ⊢ ⊥`): f!`Γ ⊢ ¬a`
+  not_elim<Γ: Ctx(), a: Fm>(hn: f!`Γ ⊢ ¬a`, ha: f!`Γ ⊢ a`): f!`Γ ⊢ ⊥`
+  bot_elim<Γ: Ctx(), a: Fm>(h: f!`Γ ⊢ ⊥`): f!`Γ ⊢ a`
+}
+
+theorem imp_self(a: Fm): f!`⊢ a → a` {
+  let h: f!`a ⊢ a` := ax(here)
+  imp_intro(h)
+}
+
+theorem imp_const(a: Fm, b: Fm): f!`⊢ a → b → a` {
+  let h1: f!`b, a ⊢ a` := ax(there(here))
+  let h2: f!`a ⊢ b → a` := imp_intro(h1)
+  imp_intro(h2)
+}
+
+theorem and_swap(a: Fm, b: Fm): f!`⊢ a ∧ b → b ∧ a` {
+  let h: f!`a ∧ b ⊢ a ∧ b` := ax(here)
+  let hb: f!`a ∧ b ⊢ b` := and_elim_right(h)
+  let ha: f!`a ∧ b ⊢ a` := and_elim_left(h)
+  imp_intro(and_intro(hb, ha))
+}
+
+theorem or_swap(a: Fm, b: Fm): f!`⊢ a ∨ b → b ∨ a` {
+  let h: f!`a ∨ b ⊢ a ∨ b` := ax(here)
+  let ha: f!`a, a ∨ b ⊢ b ∨ a` := or_intro_right(ax(here))
+  let hb: f!`b, a ∨ b ⊢ b ∨ a` := or_intro_left(ax(here))
+  imp_intro(or_elim(h, ha, hb))
+}
+
+theorem dni(a: Fm): f!`⊢ a → ¬¬a` {
+  let hn: f!`¬a, a ⊢ ¬a` := ax(here)
+  let ha: f!`¬a, a ⊢ a` := ax(there(here))
+  let hbot: f!`¬a, a ⊢ ⊥` := not_elim(hn, ha)
+  let hdn: f!`a ⊢ ¬¬a` := not_intro(hbot)
+  imp_intro(hdn)
+}

@@ -1,0 +1,271 @@
+// AI generated
+
+import std::prelude::Macro { Syn, SynExpr, SynHighlight, SynTok, SynToken }
+import std::SynTree
+import std::Text { Text }
+
+// Grammar of propositional formulas and judgments (Γ, a ⊢ b).
+// The left of ⊢ is a context (a list of formulas). Names starting with a Greek capital are context variables.
+// Precedence: ¬ > ∧ > ∨ > →. ∧ and ∨ associate to the left, → to the right.
+// P0, P1, … are atoms and ⊥ is falsity. Lowercase names are formula variables; $e embeds a Tauto expression.
+inductive_syntax!(nd, ```par
+%start Stmt
+%title "natural-deduction"
+%%
+Stmt: Closed | Items;
+Closed: Turnstile Expr;
+Items: Item { Comma Item } [ Turnstile Expr ];
+Item: CtxVar | Expr;
+Expr: Disj [ Arrow Expr ];
+Disj: Conj { OrTok Conj };
+Conj: Unary { AndTok Unary };
+Unary: Neg | Primary;
+Neg: NotTok Unary;
+Primary: BotTok | PropName | MetaVar | Paren | Embed;
+Paren: LParen Expr RParen;
+Embed: TautoExpr;
+PropName: /P[0-9]+/;
+MetaVar: /[a-z][A-Za-z0-9_]*/;
+CtxVar: /[ΓΔΘΛΞΠΣΦΨΩ][A-Za-z0-9_]*/;
+Turnstile: '⊢';
+Comma: ',';
+BotTok: '⊥';
+NotTok: '¬';
+AndTok: '∧';
+OrTok: '∨';
+Arrow: '→';
+LParen: '(';
+RParen: ')';
+```, with(fmt: nd_fmt, tokens: nd_tokens)) =>
+  enum Primary, struct Conj, struct Conj_Rep1, struct Disj, struct Disj_Rep1, struct Expr,
+  struct Expr_Opt1, struct Neg, struct Paren, enum Unary, fn parse,
+  inductive Primary::I, inductive Conj::I, inductive Conj_Rep1::I, inductive Disj::I,
+  inductive Disj_Rep1::I, inductive Expr::I, inductive Expr_Opt1::I, inductive Neg::I,
+  inductive Paren::I, inductive Unary::I,
+  fn Primary::to_i, fn Conj::to_i, fn Conj_Rep1::to_i, fn Disj::to_i, fn Disj_Rep1::to_i,
+  fn Expr::to_i, fn Expr_Opt1::to_i, fn Neg::to_i, fn Paren::to_i, fn Unary::to_i,
+  fn Conj_Rep1_list::to_i, fn Disj_Rep1_list::to_i, fn Expr_Opt1_opt::to_i,
+  enum Item, struct Items, struct Items_Rep1, struct Items_Opt1, struct Closed, enum Stmt,
+  inductive Item::I, inductive Items::I, inductive Items_Rep1::I, inductive Items_Opt1::I,
+  inductive Closed::I, inductive Stmt::I, fn Item::to_i, fn Items::to_i, fn Items_Rep1::to_i,
+  fn Items_Opt1::to_i, fn Closed::to_i, fn Stmt::to_i, fn Items_Rep1_list::to_i, fn Items_Opt1_opt::to_i
+
+// Propositional formulas.
+pub(open) inductive Fm: Type {
+  Atom(n: Nat): Fm
+  Bot: Fm
+  Not(a: Fm): Fm
+  And(a: Fm, b: Fm): Fm
+  Or(a: Fm, b: Fm): Fm
+  Imp(a: Fm, b: Fm): Fm
+}
+
+// A context: the list of assumptions.
+pub fn Ctx(): Type { List(Fm) }
+
+// Append two contexts.
+pub fn ctx_append(a: List(Fm), b: List(Fm)): List(Fm) {
+  match a {
+    [] => b
+    [x, ..rest] => [x, ..ctx_append(rest, b)]
+  }
+}
+
+// The macro for formulas and judgments.
+// - f!(`a ∧ b → a`) is a Formula.
+// - f!(`Γ, a ⊢ b`) is Derivable(context, b), where Derivable is the name in scope where f! is used.
+// - A list without ⊢, such as f!(`a, Γ`), is a context (List(Formula)); a single formula stays a Formula.
+// A context keeps the written order: a, Γ is [a, ..Γ] and Γ, a is ctx_append(Γ, [a]).
+mutual {
+  fn formula(f: nd::Expr): SynExpr {
+    let l := disj(f.disj)
+    match f.opt {
+      None => l
+      Some(o) => {
+        let r := formula(o.expr)
+        quote { Imp($l, $r) }
+      }
+    }
+  }
+  fn disj(d: nd::Disj): SynExpr {
+    disj_rest(conj(d.conj), d.rep)
+  }
+  fn disj_rest(l: SynExpr, rest: List(nd::Disj_Rep1)): SynExpr {
+    match rest {
+      [] => l
+      [x, ..xs] => {
+        let r := conj(x.conj)
+        disj_rest(quote { Or($l, $r) }, xs)
+      }
+    }
+  }
+  fn conj(c: nd::Conj): SynExpr {
+    conj_rest(unary(c.unary), c.rep)
+  }
+  fn conj_rest(l: SynExpr, rest: List(nd::Conj_Rep1)): SynExpr {
+    match rest {
+      [] => l
+      [x, ..xs] => {
+        let r := unary(x.unary)
+        conj_rest(quote { And($l, $r) }, xs)
+      }
+    }
+  }
+  fn unary(u: nd::Unary): SynExpr {
+    match u {
+      Neg(n) => {
+        let a := unary(n.unary)
+        quote { Not($a) }
+      }
+      Primary(a) => primary(a)
+    }
+  }
+  fn primary(a: nd::Primary): SynExpr {
+    match a {
+      BotTok(_) => quote { Bot }
+      PropName(t) => {
+        let digits := SynToken {
+          text: Text::slice_or_empty(t.text, 1, Text::len(t.text)),
+          span: t.span,
+          ctx: t.ctx
+        }
+        let n := Syn::nat(digits)
+        quote { Atom($n) }
+      }
+      MetaVar(t) => ExVar(Syn::ident(t))
+      Paren(p) => formula(p.expr)
+      Embed(e) => e
+    }
+  }
+}
+
+fn item(i: nd::Item): SynExpr {
+  match i {
+    CtxVar(t) => ExVar(Syn::ident(t))
+    Expr(a) => formula(a)
+  }
+}
+
+// Turn the items of a context into a List(Formula) expression.
+fn ctx(i: nd::Item, rest: List(nd::Items_Rep1)): SynExpr {
+  let tail := match rest {
+    [] => quote { [] }
+    [r, ..rs] => ctx(r.item, rs)
+  }
+  match i {
+    CtxVar(t) => {
+      let g := ExVar(Syn::ident(t))
+      match rest {
+        [] => g
+        _ => quote { ctx_append($g, $tail) }
+      }
+    }
+    Expr(a) => {
+      let x := formula(a)
+      quote { [$x, ..$tail] }
+    }
+  }
+}
+
+// The name `Derivable`, resolved where f! is used (it takes the context of the ⊢ token).
+fn derivable(t: SynToken): SynExpr {
+  ExVar(Syn::ident(SynToken { text: "Derivable", span: t.span, ctx: t.ctx }))
+}
+
+pub macro fn f(s: nd::Stmt): SynExpr {
+  match s {
+    Closed(p) => {
+      let d := derivable(p.turnstile)
+      let b := formula(p.expr)
+      quote { $d([], $b) }
+    }
+    Items(is) => match is.opt {
+      Some(o) => {
+        let g := ctx(is.item, is.rep)
+        let d := derivable(o.turnstile)
+        let b := formula(o.expr)
+        quote { $d($g, $b) }
+      }
+      None => match is.rep {
+        [] => item(is.item)
+        _ => ctx(is.item, is.rep)
+      }
+    }
+  }
+}
+
+// The colours for the language server: connectives and ⊢ as operators, ⊥ as a keyword,
+// atoms P0, P1, … as types, formula and context variables as variables. $e is left to Tauto.
+pub fn nd_tokens(ts: List(SynTok)): List(SynHighlight) ! {Div} {
+  match ts {
+    Nil => Nil
+    Cons(t, rest) => {
+      let kind := token_kind(t)
+      if t.skipped || kind == "" { nd_tokens(rest) } else {
+        Cons(SynHighlight { start: t.start, end: t.end, kind: kind }, nd_tokens(rest))
+      }
+    }
+  }
+}
+
+fn token_kind(t: SynTok): Text {
+  if t.kind == "Turnstile" || t.kind == "NotTok" || t.kind == "AndTok" || t.kind == "OrTok" || t.kind == "Arrow" || t.kind == "Comma" { "operator" } else if t.kind == "BotTok" { "keyword" } else if t.kind == "PropName" { "type" } else if t.kind == "MetaVar" || t.kind == "CtxVar" { "variable" } else { "" }
+}
+
+// The layout for `tauto fmt` inside f!(`…`): one space around binary connectives and ⊢, one after a comma, no other spaces.
+pub fn nd_fmt(ts: List(SynTok), width: u64): Option(Text) ! {Div} {
+  Some(layout(ts, true))
+}
+
+fn layout(ts: List(SynTok), first: Bool): Text ! {Div} {
+  match ts {
+    Nil => ""
+    Cons(t, rest) => if t.skipped {
+      layout(rest, first)
+    } else if t.kind == "AndTok" || t.kind == "OrTok" || t.kind == "Arrow" || t.kind == "Turnstile" {
+      Text::concat(
+        if first { "" } else { " " },
+        Text::concat(t.text, Text::concat(" ", layout(rest, false)))
+      )
+    } else if t.kind == "Comma" {
+      Text::concat(", ", layout(rest, false))
+    } else { Text::concat(t.text, layout(rest, false)) }
+  }
+}
+
+// Render a formula as text that f! reads back, with parentheses only where needed.
+pub fn render(a: Fm): Text {
+  render_at(a, 0)
+}
+
+// Precedence: 0 for →, 1 for ∨, 2 for ∧, 3 for ¬ and atoms.
+fn prec(a: Fm): Nat {
+  match a {
+    Atom(_) => 3
+    Bot => 3
+    Not(_) => 3
+    And(_, _) => 2
+    Or(_, _) => 1
+    Imp(_, _) => 0
+  }
+}
+
+fn paren(t: Text, need: Bool): Text {
+  match need {
+    true => Text::concat("(", Text::concat(t, ")"))
+    false => t
+  }
+}
+
+// ctx is the precedence the surroundings require; a weaker formula gets parentheses.
+fn render_at(a: Fm, ctx: Nat): Text {
+  let need := Nat::lt(prec(a), ctx)
+  match a {
+    Atom(n) => Text::concat("P", Text::of_nat(n))
+    Bot => "⊥"
+    Not(b) => Text::concat("¬", render_at(b, 3))
+    And(b, c) => paren(Text::concat(render_at(b, 2), Text::concat(" ∧ ", render_at(c, 3))), need)
+    Or(b, c) => paren(Text::concat(render_at(b, 1), Text::concat(" ∨ ", render_at(c, 2))), need)
+    Imp(b, c) => paren(Text::concat(render_at(b, 1), Text::concat(" → ", render_at(c, 0))), need)
+  }
+}
