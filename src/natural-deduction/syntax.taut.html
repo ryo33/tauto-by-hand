@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>src/natural-deduction/syntax.taut</title><style>:root{color-scheme:light dark;--bg:#fff;--fg:#1f2328;--mut:#6e7781;--kw:#cf222e;--str:#0a3069;--num:#0550ae;--com:#6e7781;--mac:#8250df;--ty:#953800;--fn:#6639ba;--var:#116329;--link:#0969da;--sel:#fff8c5}@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#7d8590;--kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--com:#8b949e;--mac:#d2a8ff;--ty:#ffa657;--fn:#d2a8ff;--var:#7ee787;--link:#58a6ff;--sel:#3a3000}}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif}nav,main{padding:8px 16px}a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}pre{margin:0;padding:8px 0;font:13px/1.5 ui-monospace,monospace;overflow-x:auto}pre a{color:inherit}pre a[href^="#"],pre a[href*=".html"]{text-decoration:underline dotted}.ln{display:inline-block;width:5ch;margin-right:2ch;text-align:right;color:var(--mut);user-select:none;text-decoration:none!important}.ln:target{background:var(--sel)}.kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.com{color:var(--com)}.mac{color:var(--mac)}.ty{color:var(--ty)}.fn{color:var(--fn)}.var{color:var(--var)}ul{list-style:none;padding-left:0}li li{padding-left:2ch}.kind{color:var(--mut)}</style>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>src/natural-deduction/syntax.taut</title><style>:root{color-scheme:light dark;--bg:#fff;--fg:#1f2328;--mut:#6e7781;--kw:#cf222e;--str:#0a3069;--num:#0550ae;--com:#6e7781;--mac:#8250df;--ty:#953800;--fn:#6639ba;--var:#116329;--op:#0550ae;--link:#0969da;--sel:#fff8c5}@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#7d8590;--kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--com:#8b949e;--mac:#d2a8ff;--ty:#ffa657;--fn:#d2a8ff;--var:#7ee787;--op:#79c0ff;--link:#58a6ff;--sel:#3a3000}}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif}nav,main{padding:8px 16px}a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}pre{margin:0;padding:8px 0;font:13px/1.5 ui-monospace,monospace;overflow-x:auto}pre a{color:inherit}pre a[href^="#"],pre a[href*=".html"]{text-decoration:underline dotted}.ln{display:inline-block;width:5ch;margin-right:2ch;text-align:right;color:var(--mut);user-select:none;text-decoration:none!important}.ln:target{background:var(--sel)}.kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.com{color:var(--com)}.mac{color:var(--mac)}.ty{color:var(--ty)}.fn{color:var(--fn)}.var{color:var(--var)}.op{color:var(--op)}ul{list-style:none;padding-left:0}li li{padding-left:2ch}.kind{color:var(--mut)}</style>
 <nav><a href="../../index.html">index</a> / src/natural-deduction/syntax.taut</nav>
 <pre><code><a class="ln" id="L1" href="#L1">1</a><span class="com">// AI generated</span>
 <a class="ln" id="L2" href="#L2">2</a>
@@ -15,30 +15,30 @@
 <a class="ln" id="L12" href="#L12">12</a><span class="kw">%start</span> <span class="ty">Stmt</span>
 <a class="ln" id="L13" href="#L13">13</a><span class="kw">%title</span> <span class="str">&quot;natural-deduction&quot;</span>
 <a class="ln" id="L14" href="#L14">14</a><span class="kw">%%</span>
-<a class="ln" id="L15" href="#L15">15</a><span class="ty">Stmt</span>: <span class="ty">Closed</span> | <span class="ty">Items</span>;
-<a class="ln" id="L16" href="#L16">16</a><span class="ty">Closed</span>: <span class="ty">Turnstile</span> <span class="ty">Expr</span>;
-<a class="ln" id="L17" href="#L17">17</a><span class="ty">Items</span>: <span class="ty">Item</span> { <span class="ty">Comma</span> <span class="ty">Item</span> } [ <span class="ty">Turnstile</span> <span class="ty">Expr</span> ];
-<a class="ln" id="L18" href="#L18">18</a><span class="ty">Item</span>: <span class="ty">CtxVar</span> | <span class="ty">Expr</span>;
-<a class="ln" id="L19" href="#L19">19</a><span class="ty">Expr</span>: <span class="ty">Disj</span> [ <span class="ty">Arrow</span> <span class="ty">Expr</span> ];
-<a class="ln" id="L20" href="#L20">20</a><span class="ty">Disj</span>: <span class="ty">Conj</span> { <span class="ty">OrTok</span> <span class="ty">Conj</span> };
-<a class="ln" id="L21" href="#L21">21</a><span class="ty">Conj</span>: <span class="ty">Unary</span> { <span class="ty">AndTok</span> <span class="ty">Unary</span> };
-<a class="ln" id="L22" href="#L22">22</a><span class="ty">Unary</span>: <span class="ty">Neg</span> | <span class="ty">Primary</span>;
-<a class="ln" id="L23" href="#L23">23</a><span class="ty">Neg</span>: <span class="ty">NotTok</span> <span class="ty">Unary</span>;
-<a class="ln" id="L24" href="#L24">24</a><span class="ty">Primary</span>: <span class="ty">BotTok</span> | <span class="ty">PropName</span> | <span class="ty">MetaVar</span> | <span class="ty">Paren</span> | <span class="ty">Embed</span>;
-<a class="ln" id="L25" href="#L25">25</a><span class="ty">Paren</span>: <span class="ty">LParen</span> <span class="ty">Expr</span> <span class="ty">RParen</span>;
-<a class="ln" id="L26" href="#L26">26</a><span class="ty">Embed</span>: <span class="ty">TautoExpr</span>;
-<a class="ln" id="L27" href="#L27">27</a><span class="ty">PropName</span>: <span class="str">/P[0-9]+/</span>;
-<a class="ln" id="L28" href="#L28">28</a><span class="ty">MetaVar</span>: <span class="str">/[a-z][A-Za-z0-9_]*/</span>;
-<a class="ln" id="L29" href="#L29">29</a><span class="ty">CtxVar</span>: <span class="str">/[ΓΔΘΛΞΠΣΦΨΩ][A-Za-z0-9_]*/</span>;
-<a class="ln" id="L30" href="#L30">30</a><span class="ty">Turnstile</span>: <span class="str">'⊢'</span>;
-<a class="ln" id="L31" href="#L31">31</a><span class="ty">Comma</span>: <span class="str">','</span>;
-<a class="ln" id="L32" href="#L32">32</a><span class="ty">BotTok</span>: <span class="str">'⊥'</span>;
-<a class="ln" id="L33" href="#L33">33</a><span class="ty">NotTok</span>: <span class="str">'¬'</span>;
-<a class="ln" id="L34" href="#L34">34</a><span class="ty">AndTok</span>: <span class="str">'∧'</span>;
-<a class="ln" id="L35" href="#L35">35</a><span class="ty">OrTok</span>: <span class="str">'∨'</span>;
-<a class="ln" id="L36" href="#L36">36</a><span class="ty">Arrow</span>: <span class="str">'→'</span>;
-<a class="ln" id="L37" href="#L37">37</a><span class="ty">LParen</span>: <span class="str">'('</span>;
-<a class="ln" id="L38" href="#L38">38</a><span class="ty">RParen</span>: <span class="str">')'</span>;
+<a class="ln" id="L15" href="#L15">15</a><span class="ty">Stmt</span><span class="op">:</span> <span class="ty">Closed</span> <span class="op">|</span> <span class="ty">Items</span><span class="op">;</span>
+<a class="ln" id="L16" href="#L16">16</a><span class="ty">Closed</span><span class="op">:</span> <span class="ty">Turnstile</span> <span class="ty">Expr</span><span class="op">;</span>
+<a class="ln" id="L17" href="#L17">17</a><span class="ty">Items</span><span class="op">:</span> <span class="ty">Item</span> <span class="op">{</span> <span class="ty">Comma</span> <span class="ty">Item</span> <span class="op">}</span> <span class="op">[</span> <span class="ty">Turnstile</span> <span class="ty">Expr</span> <span class="op">]</span><span class="op">;</span>
+<a class="ln" id="L18" href="#L18">18</a><span class="ty">Item</span><span class="op">:</span> <span class="ty">CtxVar</span> <span class="op">|</span> <span class="ty">Expr</span><span class="op">;</span>
+<a class="ln" id="L19" href="#L19">19</a><span class="ty">Expr</span><span class="op">:</span> <span class="ty">Disj</span> <span class="op">[</span> <span class="ty">Arrow</span> <span class="ty">Expr</span> <span class="op">]</span><span class="op">;</span>
+<a class="ln" id="L20" href="#L20">20</a><span class="ty">Disj</span><span class="op">:</span> <span class="ty">Conj</span> <span class="op">{</span> <span class="ty">OrTok</span> <span class="ty">Conj</span> <span class="op">}</span><span class="op">;</span>
+<a class="ln" id="L21" href="#L21">21</a><span class="ty">Conj</span><span class="op">:</span> <span class="ty">Unary</span> <span class="op">{</span> <span class="ty">AndTok</span> <span class="ty">Unary</span> <span class="op">}</span><span class="op">;</span>
+<a class="ln" id="L22" href="#L22">22</a><span class="ty">Unary</span><span class="op">:</span> <span class="ty">Neg</span> <span class="op">|</span> <span class="ty">Primary</span><span class="op">;</span>
+<a class="ln" id="L23" href="#L23">23</a><span class="ty">Neg</span><span class="op">:</span> <span class="ty">NotTok</span> <span class="ty">Unary</span><span class="op">;</span>
+<a class="ln" id="L24" href="#L24">24</a><span class="ty">Primary</span><span class="op">:</span> <span class="ty">BotTok</span> <span class="op">|</span> <span class="ty">PropName</span> <span class="op">|</span> <span class="ty">MetaVar</span> <span class="op">|</span> <span class="ty">Paren</span> <span class="op">|</span> <span class="ty">Embed</span><span class="op">;</span>
+<a class="ln" id="L25" href="#L25">25</a><span class="ty">Paren</span><span class="op">:</span> <span class="ty">LParen</span> <span class="ty">Expr</span> <span class="ty">RParen</span><span class="op">;</span>
+<a class="ln" id="L26" href="#L26">26</a><span class="ty">Embed</span><span class="op">:</span> <span class="ty">TautoExpr</span><span class="op">;</span>
+<a class="ln" id="L27" href="#L27">27</a><span class="ty">PropName</span><span class="op">:</span> <span class="str">/P[0-9]+/</span><span class="op">;</span>
+<a class="ln" id="L28" href="#L28">28</a><span class="ty">MetaVar</span><span class="op">:</span> <span class="str">/[a-z][A-Za-z0-9_]*/</span><span class="op">;</span>
+<a class="ln" id="L29" href="#L29">29</a><span class="ty">CtxVar</span><span class="op">:</span> <span class="str">/[ΓΔΘΛΞΠΣΦΨΩ][A-Za-z0-9_]*/</span><span class="op">;</span>
+<a class="ln" id="L30" href="#L30">30</a><span class="ty">Turnstile</span><span class="op">:</span> <span class="str">'⊢'</span><span class="op">;</span>
+<a class="ln" id="L31" href="#L31">31</a><span class="ty">Comma</span><span class="op">:</span> <span class="str">','</span><span class="op">;</span>
+<a class="ln" id="L32" href="#L32">32</a><span class="ty">BotTok</span><span class="op">:</span> <span class="str">'⊥'</span><span class="op">;</span>
+<a class="ln" id="L33" href="#L33">33</a><span class="ty">NotTok</span><span class="op">:</span> <span class="str">'¬'</span><span class="op">;</span>
+<a class="ln" id="L34" href="#L34">34</a><span class="ty">AndTok</span><span class="op">:</span> <span class="str">'∧'</span><span class="op">;</span>
+<a class="ln" id="L35" href="#L35">35</a><span class="ty">OrTok</span><span class="op">:</span> <span class="str">'∨'</span><span class="op">;</span>
+<a class="ln" id="L36" href="#L36">36</a><span class="ty">Arrow</span><span class="op">:</span> <span class="str">'→'</span><span class="op">;</span>
+<a class="ln" id="L37" href="#L37">37</a><span class="ty">LParen</span><span class="op">:</span> <span class="str">'('</span><span class="op">;</span>
+<a class="ln" id="L38" href="#L38">38</a><span class="ty">RParen</span><span class="op">:</span> <span class="str">')'</span><span class="op">;</span>
 <a class="ln" id="L39" href="#L39">39</a>```, <span class="kw">with</span>(fmt: nd_fmt, tokens: nd_tokens)) =&gt;
 <a class="ln" id="L40" href="#L40">40</a>  <span class="kw">enum</span> Primary, <span class="kw">struct</span> Conj, <span class="kw">struct</span> Conj_Rep1, <span class="kw">struct</span> Disj, <span class="kw">struct</span> Disj_Rep1, <span class="kw">struct</span> Expr,
 <a class="ln" id="L41" href="#L41">41</a>  <span class="kw">struct</span> Expr_Opt1, <span class="kw">struct</span> Neg, <span class="kw">struct</span> Paren, <span class="kw">enum</span> Unary, <span class="kw">fn</span> parse,

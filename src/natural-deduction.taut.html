@@ -1,63 +1,63 @@
 <!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>src/natural-deduction.taut</title><style>:root{color-scheme:light dark;--bg:#fff;--fg:#1f2328;--mut:#6e7781;--kw:#cf222e;--str:#0a3069;--num:#0550ae;--com:#6e7781;--mac:#8250df;--ty:#953800;--fn:#6639ba;--var:#116329;--link:#0969da;--sel:#fff8c5}@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#7d8590;--kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--com:#8b949e;--mac:#d2a8ff;--ty:#ffa657;--fn:#d2a8ff;--var:#7ee787;--link:#58a6ff;--sel:#3a3000}}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif}nav,main{padding:8px 16px}a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}pre{margin:0;padding:8px 0;font:13px/1.5 ui-monospace,monospace;overflow-x:auto}pre a{color:inherit}pre a[href^="#"],pre a[href*=".html"]{text-decoration:underline dotted}.ln{display:inline-block;width:5ch;margin-right:2ch;text-align:right;color:var(--mut);user-select:none;text-decoration:none!important}.ln:target{background:var(--sel)}.kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.com{color:var(--com)}.mac{color:var(--mac)}.ty{color:var(--ty)}.fn{color:var(--fn)}.var{color:var(--var)}ul{list-style:none;padding-left:0}li li{padding-left:2ch}.kind{color:var(--mut)}</style>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>src/natural-deduction.taut</title><style>:root{color-scheme:light dark;--bg:#fff;--fg:#1f2328;--mut:#6e7781;--kw:#cf222e;--str:#0a3069;--num:#0550ae;--com:#6e7781;--mac:#8250df;--ty:#953800;--fn:#6639ba;--var:#116329;--op:#0550ae;--link:#0969da;--sel:#fff8c5}@media (prefers-color-scheme:dark){:root{--bg:#0d1117;--fg:#e6edf3;--mut:#7d8590;--kw:#ff7b72;--str:#a5d6ff;--num:#79c0ff;--com:#8b949e;--mac:#d2a8ff;--ty:#ffa657;--fn:#d2a8ff;--var:#7ee787;--op:#79c0ff;--link:#58a6ff;--sel:#3a3000}}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif}nav,main{padding:8px 16px}a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}pre{margin:0;padding:8px 0;font:13px/1.5 ui-monospace,monospace;overflow-x:auto}pre a{color:inherit}pre a[href^="#"],pre a[href*=".html"]{text-decoration:underline dotted}.ln{display:inline-block;width:5ch;margin-right:2ch;text-align:right;color:var(--mut);user-select:none;text-decoration:none!important}.ln:target{background:var(--sel)}.kw{color:var(--kw)}.str{color:var(--str)}.num{color:var(--num)}.com{color:var(--com)}.mac{color:var(--mac)}.ty{color:var(--ty)}.fn{color:var(--fn)}.var{color:var(--var)}.op{color:var(--op)}ul{list-style:none;padding-left:0}li li{padding-left:2ch}.kind{color:var(--mut)}</style>
 <nav><a href="../index.html">index</a> / src/natural-deduction.taut</nav>
 <pre><code><a class="ln" id="L1" href="#L1">1</a><span class="kw">import</span> self::syntax
 <a class="ln" id="L2" href="#L2">2</a>
 <a class="ln" id="L3" href="#L3">3</a><span class="kw">pub(open)</span> <span class="kw">inductive</span> Mem: (Fm, Ctx()) -&gt; Prop {
-<a class="ln" id="L4" href="#L4">4</a>  here&lt;a: Fm, Γ: Ctx()&gt;: Mem(a, [a, ..Γ])
-<a class="ln" id="L5" href="#L5">5</a>  there&lt;a: Fm, b: Fm, Γ: Ctx()&gt;(h: Mem(a, Γ)): Mem(a, [b, ..Γ])
+<a class="ln" id="L4" href="#L4">4</a>  here&lt;a: Fm, Γ: Ctx()&gt;: <a href="#L3">Mem</a>(a, [a, ..Γ])
+<a class="ln" id="L5" href="#L5">5</a>  there&lt;a: Fm, b: Fm, Γ: Ctx()&gt;(h: <a href="#L3">Mem</a>(a, Γ)): <a href="#L3">Mem</a>(a, [b, ..Γ])
 <a class="ln" id="L6" href="#L6">6</a>}
 <a class="ln" id="L7" href="#L7">7</a>
 <a class="ln" id="L8" href="#L8">8</a><span class="kw">pub(open)</span> <span class="kw">inductive</span> Derivable: (Ctx(), Fm) -&gt; Prop {
-<a class="ln" id="L9" href="#L9">9</a>  ax&lt;Γ: Ctx(), a: Fm&gt;(h: Mem(a, Γ)): <span class="mac">f!</span>`Γ ⊢ a`
-<a class="ln" id="L10" href="#L10">10</a>  and_intro&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(ha: <span class="mac">f!</span>`Γ ⊢ a`, hb: <span class="mac">f!</span>`Γ ⊢ b`): <span class="mac">f!</span>`Γ ⊢ a ∧ b`
-<a class="ln" id="L11" href="#L11">11</a>  and_elim_left&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`Γ ⊢ a ∧ b`): <span class="mac">f!</span>`Γ ⊢ a`
-<a class="ln" id="L12" href="#L12">12</a>  and_elim_right&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`Γ ⊢ a ∧ b`): <span class="mac">f!</span>`Γ ⊢ b`
-<a class="ln" id="L13" href="#L13">13</a>  imp_intro&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`a, Γ ⊢ b`): <span class="mac">f!</span>`Γ ⊢ a → b`
-<a class="ln" id="L14" href="#L14">14</a>  imp_elim&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(hf: <span class="mac">f!</span>`Γ ⊢ a → b`, ha: <span class="mac">f!</span>`Γ ⊢ a`): <span class="mac">f!</span>`Γ ⊢ b`
-<a class="ln" id="L15" href="#L15">15</a>  or_intro_left&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`Γ ⊢ a`): <span class="mac">f!</span>`Γ ⊢ a ∨ b`
-<a class="ln" id="L16" href="#L16">16</a>  or_intro_right&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`Γ ⊢ b`): <span class="mac">f!</span>`Γ ⊢ a ∨ b`
+<a class="ln" id="L9" href="#L9">9</a>  ax&lt;Γ: Ctx(), a: Fm&gt;(h: <a href="#L3">Mem</a>(a, Γ)): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span>`
+<a class="ln" id="L10" href="#L10">10</a>  and_intro&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(ha: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span>`, hb: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">b</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∧</span> <span class="var">b</span>`
+<a class="ln" id="L11" href="#L11">11</a>  and_elim_left&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∧</span> <span class="var">b</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span>`
+<a class="ln" id="L12" href="#L12">12</a>  and_elim_right&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∧</span> <span class="var">b</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">b</span>`
+<a class="ln" id="L13" href="#L13">13</a>  imp_intro&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`<span class="var">a</span><span class="op">,</span> <span class="var">Γ</span> <span class="op">⊢</span> <span class="var">b</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">→</span> <span class="var">b</span>`
+<a class="ln" id="L14" href="#L14">14</a>  imp_elim&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(hf: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">→</span> <span class="var">b</span>`, ha: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">b</span>`
+<a class="ln" id="L15" href="#L15">15</a>  or_intro_left&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∨</span> <span class="var">b</span>`
+<a class="ln" id="L16" href="#L16">16</a>  or_intro_right&lt;Γ: Ctx(), a: Fm, b: Fm&gt;(h: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">b</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∨</span> <span class="var">b</span>`
 <a class="ln" id="L17" href="#L17">17</a>  or_elim&lt;Γ: Ctx(), a: Fm, b: Fm, c: Fm&gt;(
-<a class="ln" id="L18" href="#L18">18</a>    h: <span class="mac">f!</span>`Γ ⊢ a ∨ b`,
-<a class="ln" id="L19" href="#L19">19</a>    ha: <span class="mac">f!</span>`a, Γ ⊢ c`,
-<a class="ln" id="L20" href="#L20">20</a>    hb: <span class="mac">f!</span>`b, Γ ⊢ c`
-<a class="ln" id="L21" href="#L21">21</a>  ): <span class="mac">f!</span>`Γ ⊢ c`
-<a class="ln" id="L22" href="#L22">22</a>  not_intro&lt;Γ: Ctx(), a: Fm&gt;(h: <span class="mac">f!</span>`a, Γ ⊢ <span class="kw">⊥</span>`): <span class="mac">f!</span>`Γ ⊢ ¬a`
-<a class="ln" id="L23" href="#L23">23</a>  not_elim&lt;Γ: Ctx(), a: Fm&gt;(hn: <span class="mac">f!</span>`Γ ⊢ ¬a`, ha: <span class="mac">f!</span>`Γ ⊢ a`): <span class="mac">f!</span>`Γ ⊢ <span class="kw">⊥</span>`
-<a class="ln" id="L24" href="#L24">24</a>  bot_elim&lt;Γ: Ctx(), a: Fm&gt;(h: <span class="mac">f!</span>`Γ ⊢ <span class="kw">⊥</span>`): <span class="mac">f!</span>`Γ ⊢ a`
+<a class="ln" id="L18" href="#L18">18</a>    h: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∨</span> <span class="var">b</span>`,
+<a class="ln" id="L19" href="#L19">19</a>    ha: <span class="mac">f!</span>`<span class="var">a</span><span class="op">,</span> <span class="var">Γ</span> <span class="op">⊢</span> <span class="var">c</span>`,
+<a class="ln" id="L20" href="#L20">20</a>    hb: <span class="mac">f!</span>`<span class="var">b</span><span class="op">,</span> <span class="var">Γ</span> <span class="op">⊢</span> <span class="var">c</span>`
+<a class="ln" id="L21" href="#L21">21</a>  ): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">c</span>`
+<a class="ln" id="L22" href="#L22">22</a>  not_intro&lt;Γ: Ctx(), a: Fm&gt;(h: <span class="mac">f!</span>`<span class="var">a</span><span class="op">,</span> <span class="var">Γ</span> <span class="op">⊢</span> <span class="kw">⊥</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="op">¬</span><span class="var">a</span>`
+<a class="ln" id="L23" href="#L23">23</a>  not_elim&lt;Γ: Ctx(), a: Fm&gt;(hn: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="op">¬</span><span class="var">a</span>`, ha: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="kw">⊥</span>`
+<a class="ln" id="L24" href="#L24">24</a>  bot_elim&lt;Γ: Ctx(), a: Fm&gt;(h: <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="kw">⊥</span>`): <span class="mac">f!</span>`<span class="var">Γ</span> <span class="op">⊢</span> <span class="var">a</span>`
 <a class="ln" id="L25" href="#L25">25</a>}
 <a class="ln" id="L26" href="#L26">26</a>
-<a class="ln" id="L27" href="#L27">27</a><span class="kw">theorem</span> imp_self(a: Fm): <span class="mac">f!</span>`⊢ a → a` {
-<a class="ln" id="L28" href="#L28">28</a>  <span class="kw">let</span> h: <span class="mac">f!</span>`a ⊢ a` := ax(here)
-<a class="ln" id="L29" href="#L29">29</a>  imp_intro(h)
+<a class="ln" id="L27" href="#L27">27</a><span class="kw">theorem</span> imp_self(a: Fm): <span class="mac">f!</span>`<span class="op">⊢</span> <span class="var">a</span> <span class="op">→</span> <span class="var">a</span>` {
+<a class="ln" id="L28" href="#L28">28</a>  <span class="kw">let</span> h: <span class="mac">f!</span>`<span class="var">a</span> <span class="op">⊢</span> <span class="var">a</span>` := <a href="#L9">ax</a>(<a href="#L4">here</a>)
+<a class="ln" id="L29" href="#L29">29</a>  <a href="#L13">imp_intro</a>(h)
 <a class="ln" id="L30" href="#L30">30</a>}
 <a class="ln" id="L31" href="#L31">31</a>
-<a class="ln" id="L32" href="#L32">32</a><span class="kw">theorem</span> imp_const(a: Fm, b: Fm): <span class="mac">f!</span>`⊢ a → b → a` {
-<a class="ln" id="L33" href="#L33">33</a>  <span class="kw">let</span> h1: <span class="mac">f!</span>`b, a ⊢ a` := ax(there(here))
-<a class="ln" id="L34" href="#L34">34</a>  <span class="kw">let</span> h2: <span class="mac">f!</span>`a ⊢ b → a` := imp_intro(h1)
-<a class="ln" id="L35" href="#L35">35</a>  imp_intro(h2)
+<a class="ln" id="L32" href="#L32">32</a><span class="kw">theorem</span> imp_const(a: Fm, b: Fm): <span class="mac">f!</span>`<span class="op">⊢</span> <span class="var">a</span> <span class="op">→</span> <span class="var">b</span> <span class="op">→</span> <span class="var">a</span>` {
+<a class="ln" id="L33" href="#L33">33</a>  <span class="kw">let</span> h1: <span class="mac">f!</span>`<span class="var">b</span><span class="op">,</span> <span class="var">a</span> <span class="op">⊢</span> <span class="var">a</span>` := <a href="#L9">ax</a>(<a href="#L5">there</a>(<a href="#L4">here</a>))
+<a class="ln" id="L34" href="#L34">34</a>  <span class="kw">let</span> h2: <span class="mac">f!</span>`<span class="var">a</span> <span class="op">⊢</span> <span class="var">b</span> <span class="op">→</span> <span class="var">a</span>` := <a href="#L13">imp_intro</a>(h1)
+<a class="ln" id="L35" href="#L35">35</a>  <a href="#L13">imp_intro</a>(h2)
 <a class="ln" id="L36" href="#L36">36</a>}
 <a class="ln" id="L37" href="#L37">37</a>
-<a class="ln" id="L38" href="#L38">38</a><span class="kw">theorem</span> and_swap(a: Fm, b: Fm): <span class="mac">f!</span>`⊢ a ∧ b → b ∧ a` {
-<a class="ln" id="L39" href="#L39">39</a>  <span class="kw">let</span> h: <span class="mac">f!</span>`a ∧ b ⊢ a ∧ b` := ax(here)
-<a class="ln" id="L40" href="#L40">40</a>  <span class="kw">let</span> hb: <span class="mac">f!</span>`a ∧ b ⊢ b` := and_elim_right(h)
-<a class="ln" id="L41" href="#L41">41</a>  <span class="kw">let</span> ha: <span class="mac">f!</span>`a ∧ b ⊢ a` := and_elim_left(h)
-<a class="ln" id="L42" href="#L42">42</a>  imp_intro(and_intro(hb, ha))
+<a class="ln" id="L38" href="#L38">38</a><span class="kw">theorem</span> and_swap(a: Fm, b: Fm): <span class="mac">f!</span>`<span class="op">⊢</span> <span class="var">a</span> <span class="op">∧</span> <span class="var">b</span> <span class="op">→</span> <span class="var">b</span> <span class="op">∧</span> <span class="var">a</span>` {
+<a class="ln" id="L39" href="#L39">39</a>  <span class="kw">let</span> h: <span class="mac">f!</span>`<span class="var">a</span> <span class="op">∧</span> <span class="var">b</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∧</span> <span class="var">b</span>` := <a href="#L9">ax</a>(<a href="#L4">here</a>)
+<a class="ln" id="L40" href="#L40">40</a>  <span class="kw">let</span> hb: <span class="mac">f!</span>`<span class="var">a</span> <span class="op">∧</span> <span class="var">b</span> <span class="op">⊢</span> <span class="var">b</span>` := <a href="#L12">and_elim_right</a>(h)
+<a class="ln" id="L41" href="#L41">41</a>  <span class="kw">let</span> ha: <span class="mac">f!</span>`<span class="var">a</span> <span class="op">∧</span> <span class="var">b</span> <span class="op">⊢</span> <span class="var">a</span>` := <a href="#L11">and_elim_left</a>(h)
+<a class="ln" id="L42" href="#L42">42</a>  <a href="#L13">imp_intro</a>(<a href="#L10">and_intro</a>(hb, ha))
 <a class="ln" id="L43" href="#L43">43</a>}
 <a class="ln" id="L44" href="#L44">44</a>
-<a class="ln" id="L45" href="#L45">45</a><span class="kw">theorem</span> or_swap(a: Fm, b: Fm): <span class="mac">f!</span>`⊢ a ∨ b → b ∨ a` {
-<a class="ln" id="L46" href="#L46">46</a>  <span class="kw">let</span> h: <span class="mac">f!</span>`a ∨ b ⊢ a ∨ b` := ax(here)
-<a class="ln" id="L47" href="#L47">47</a>  <span class="kw">let</span> ha: <span class="mac">f!</span>`a, a ∨ b ⊢ b ∨ a` := or_intro_right(ax(here))
-<a class="ln" id="L48" href="#L48">48</a>  <span class="kw">let</span> hb: <span class="mac">f!</span>`b, a ∨ b ⊢ b ∨ a` := or_intro_left(ax(here))
-<a class="ln" id="L49" href="#L49">49</a>  imp_intro(or_elim(h, ha, hb))
+<a class="ln" id="L45" href="#L45">45</a><span class="kw">theorem</span> or_swap(a: Fm, b: Fm): <span class="mac">f!</span>`<span class="op">⊢</span> <span class="var">a</span> <span class="op">∨</span> <span class="var">b</span> <span class="op">→</span> <span class="var">b</span> <span class="op">∨</span> <span class="var">a</span>` {
+<a class="ln" id="L46" href="#L46">46</a>  <span class="kw">let</span> h: <span class="mac">f!</span>`<span class="var">a</span> <span class="op">∨</span> <span class="var">b</span> <span class="op">⊢</span> <span class="var">a</span> <span class="op">∨</span> <span class="var">b</span>` := <a href="#L9">ax</a>(<a href="#L4">here</a>)
+<a class="ln" id="L47" href="#L47">47</a>  <span class="kw">let</span> ha: <span class="mac">f!</span>`<span class="var">a</span><span class="op">,</span> <span class="var">a</span> <span class="op">∨</span> <span class="var">b</span> <span class="op">⊢</span> <span class="var">b</span> <span class="op">∨</span> <span class="var">a</span>` := <a href="#L16">or_intro_right</a>(<a href="#L9">ax</a>(<a href="#L4">here</a>))
+<a class="ln" id="L48" href="#L48">48</a>  <span class="kw">let</span> hb: <span class="mac">f!</span>`<span class="var">b</span><span class="op">,</span> <span class="var">a</span> <span class="op">∨</span> <span class="var">b</span> <span class="op">⊢</span> <span class="var">b</span> <span class="op">∨</span> <span class="var">a</span>` := <a href="#L15">or_intro_left</a>(<a href="#L9">ax</a>(<a href="#L4">here</a>))
+<a class="ln" id="L49" href="#L49">49</a>  <a href="#L13">imp_intro</a>(<a href="#L17">or_elim</a>(h, ha, hb))
 <a class="ln" id="L50" href="#L50">50</a>}
 <a class="ln" id="L51" href="#L51">51</a>
-<a class="ln" id="L52" href="#L52">52</a><span class="kw">theorem</span> dni(a: Fm): <span class="mac">f!</span>`⊢ a → ¬¬a` {
-<a class="ln" id="L53" href="#L53">53</a>  <span class="kw">let</span> hn: <span class="mac">f!</span>`¬a, a ⊢ ¬a` := ax(here)
-<a class="ln" id="L54" href="#L54">54</a>  <span class="kw">let</span> ha: <span class="mac">f!</span>`¬a, a ⊢ a` := ax(there(here))
-<a class="ln" id="L55" href="#L55">55</a>  <span class="kw">let</span> hbot: <span class="mac">f!</span>`¬a, a ⊢ <span class="kw">⊥</span>` := not_elim(hn, ha)
-<a class="ln" id="L56" href="#L56">56</a>  <span class="kw">let</span> hdn: <span class="mac">f!</span>`a ⊢ ¬¬a` := not_intro(hbot)
-<a class="ln" id="L57" href="#L57">57</a>  imp_intro(hdn)
+<a class="ln" id="L52" href="#L52">52</a><span class="kw">theorem</span> dni(a: Fm): <span class="mac">f!</span>`<span class="op">⊢</span> <span class="var">a</span> <span class="op">→</span> <span class="op">¬</span><span class="op">¬</span><span class="var">a</span>` {
+<a class="ln" id="L53" href="#L53">53</a>  <span class="kw">let</span> hn: <span class="mac">f!</span>`<span class="op">¬</span><span class="var">a</span><span class="op">,</span> <span class="var">a</span> <span class="op">⊢</span> <span class="op">¬</span><span class="var">a</span>` := <a href="#L9">ax</a>(<a href="#L4">here</a>)
+<a class="ln" id="L54" href="#L54">54</a>  <span class="kw">let</span> ha: <span class="mac">f!</span>`<span class="op">¬</span><span class="var">a</span><span class="op">,</span> <span class="var">a</span> <span class="op">⊢</span> <span class="var">a</span>` := <a href="#L9">ax</a>(<a href="#L5">there</a>(<a href="#L4">here</a>))
+<a class="ln" id="L55" href="#L55">55</a>  <span class="kw">let</span> hbot: <span class="mac">f!</span>`<span class="op">¬</span><span class="var">a</span><span class="op">,</span> <span class="var">a</span> <span class="op">⊢</span> <span class="kw">⊥</span>` := <a href="#L23">not_elim</a>(hn, ha)
+<a class="ln" id="L56" href="#L56">56</a>  <span class="kw">let</span> hdn: <span class="mac">f!</span>`<span class="var">a</span> <span class="op">⊢</span> <span class="op">¬</span><span class="op">¬</span><span class="var">a</span>` := <a href="#L22">not_intro</a>(hbot)
+<a class="ln" id="L57" href="#L57">57</a>  <a href="#L13">imp_intro</a>(hdn)
 <a class="ln" id="L58" href="#L58">58</a>}
 </code></pre>
 </html>
